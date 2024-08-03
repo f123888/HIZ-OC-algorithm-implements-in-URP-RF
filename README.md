@@ -10,13 +10,13 @@
 
 ### 结果
 
-##### 基础效果：
+#### 基础效果：
 
 ![](./Image/hiz.gif)
 
-##### 待改进：
+#### 待改进：
 
-1. 直接获取了场景中所有的静态物体作为GPU剔除的输入，正常应该是做视椎体剔除后的物体,在Shader中做视椎体剔除：
+1. 直接获取了场景中所有的静态物体作为GPU剔除的输入，正常应该是做视椎体剔除后的物体。这里为了演示选择在GPU中做视椎体剔除：
 
 ```c++
 if( ndcMax.x < 0 || ndcMax.y < 0 || ndcMin.x > 1 || ndcMin.y > 1 || ndcMax.z >1 || ndcMin.z<0)
@@ -25,6 +25,10 @@ if( ndcMax.x < 0 || ndcMax.y < 0 || ndcMin.x > 1 || ndcMin.y > 1 || ndcMax.z >1 
 }
 ```
 2. 不完全位于视椎体内的物体可能剔除不了，位于视椎体外的顶点会产生错误的采样结果（采样到别的级别的mipmap）从而导致剔除失败。
+
+![](./Image/1.png)
+
+产生原因：
 
 ```c++
 float2 ndcSize = floor((ndcMax.xy - ndcMin.xy) * _Mip0Size);
@@ -41,4 +45,3 @@ float d2 = LOAD_TEXTURE2D_LOD(_DepthPyramidTex, pxMinMax.xw,0); // lt
 float d3 = LOAD_TEXTURE2D_LOD(_DepthPyramidTex, pxMinMax.zw,0); // rt
 ```
 
-![](./Image/1.png)
